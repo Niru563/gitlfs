@@ -1,0 +1,31 @@
+mport json 
+import requests
+import sys
+from datetime import timedelta
+from datetime import datetime
+URL = "http://34.203.223.19:8081/"
+headers  = {"Accept": "application/json"}
+print("Today: "+datetime.now().strftime('%d/%m/%Y %H:%M:%S'))
+date_after_month = datetime.now()+ timedelta(days=int(sys.argv[3]))
+print("After: "+date_after_month.strftime('%d/%m/%Y %H:%M:%S'))
+data = {}
+data['name'] = sys.argv[1]+"_"+str(date_after_month.strftime('%d%m%Y'))
+data['infra_image'] = sys.argv[2]
+resp = requests.post(URL + "v1.40.0/libpod/pods/create", headers = headers,json=data)
+token = json.loads(resp.text)
+print(token)
+*********************
+pipeline {
+    agent any
+    stages {
+        stage('Create POD') {
+            steps {
+                sh "python3 /var/lib/jenkins/podman.py ${NAME} ${IMAGE_NAME} ${NUMBER_OF_DAYS}"
+            }
+        }
+    }
+}
+
+*********************
+
+http://34.203.223.19:8080/job/Create_POD/12/console
